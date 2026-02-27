@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-import { expect, test } from "@playwright/test";
+import { expect, test, takeSnapshot } from "@chromatic-com/playwright"; 
 
 import { SbPage } from "../../../../code/e2e-tests/util";
 
@@ -452,7 +452,7 @@ test.describe("component testing", () => {
   test("should collect coverage to testing module and HTML report", async ({
     page,
     browserName,
-  }) => {
+  }, testInfo) => {
     test.skip(browserName !== "chromium", `Skipping tests for ${browserName}`);
     // Arrange - Prepare Storybook
     await modifyFile(TEST_STORY_PATH, (content) =>
@@ -507,6 +507,8 @@ test.describe("component testing", () => {
       htmlPercentageText.replace("% ", "")
     );
     expect(Math.round(htmlPercentage)).toBe(sbPercentage);
+
+    await takeSnapshot(page, testInfo)
 
     await page.goBack();
   });
